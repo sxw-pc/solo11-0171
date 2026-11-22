@@ -15,6 +15,10 @@ CREATE TABLE IF NOT EXISTS repair(id TEXT PRIMARY KEY,segment_id TEXT,valve_id T
 CREATE TABLE IF NOT EXISTS notice(id TEXT PRIMARY KEY,repair_id TEXT,households_json TEXT,delivered_at TEXT,status TEXT,source_id INTEGER);
 CREATE TABLE IF NOT EXISTS tap(id TEXT PRIMARY KEY,repair_id TEXT,household TEXT,pressure_kpa INTEGER,observed_at TEXT,witness TEXT,status TEXT,source_id INTEGER);
 CREATE TABLE IF NOT EXISTS restoration(id INTEGER PRIMARY KEY,repair_id TEXT,status TEXT,restored_at TEXT,compensation_json TEXT,reason TEXT);
+CREATE TABLE IF NOT EXISTS worksite(id TEXT PRIMARY KEY,repair_id TEXT,x INTEGER,y INTEGER,method TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS parcel(id TEXT PRIMARY KEY,owner TEXT,polygon_json TEXT,survey_version TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS corridor(id TEXT PRIMARY KEY,worksite_id TEXT,path_json TEXT,width_cm INTEGER,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS land_consent(id TEXT PRIMARY KEY,parcel_id TEXT,worksite_id TEXT,valid_from TEXT,valid_to TEXT,method TEXT,source_id INTEGER);
 '''
 @contextmanager
 def connect(path):
@@ -40,4 +44,4 @@ def repeated(db,table,key,sid):
     return False
 def dump(db):
     return {t:[dict(x) for x in db.execute(f'SELECT * FROM {t} ORDER BY 1')]
-            for t in ('segment','gauge','pressure','leak','valve','permit','repair','notice','tap','restoration')}
+            for t in ('segment','gauge','pressure','leak','valve','permit','repair','notice','tap','restoration','worksite','parcel','corridor','land_consent')}
