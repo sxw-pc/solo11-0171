@@ -21,6 +21,12 @@ CREATE TABLE IF NOT EXISTS pump_run(id TEXT PRIMARY KEY,pump_id TEXT,started_at 
 CREATE TABLE IF NOT EXISTS zone_demand(id TEXT PRIMARY KEY,zone TEXT,window_start TEXT,window_end TEXT,required_l INTEGER,source_id INTEGER);
 CREATE TABLE IF NOT EXISTS vibration_sample(id TEXT PRIMARY KEY,pump_id TEXT,run_id TEXT,sample_rate_hz INTEGER,axis TEXT,values_json TEXT,recorded_at TEXT,source_id INTEGER);
 CREATE TABLE IF NOT EXISTS tachometer(id TEXT PRIMARY KEY,pump_id TEXT,run_id TEXT,rpm INTEGER,recorded_at TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS health_assessment(id TEXT PRIMARY KEY,pump_id TEXT,run_id TEXT,shaft_hz REAL,sample_rates_json TEXT,peak_hz REAL,status TEXT,provable_json TEXT,candidates_json TEXT,alias_class_json TEXT,confidence_json TEXT,recorder_conditions_json TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS recapture_task(id TEXT PRIMARY KEY,pump_id TEXT,run_id TEXT,target_sample_rate_hz INTEGER,axes_json TEXT,anti_alias_filter INTEGER,sync_tach_pulse INTEGER,probe_position TEXT,load_condition TEXT,reasons_json TEXT,status TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS recapture_record(id TEXT PRIMARY KEY,pump_id TEXT,run_id TEXT,sample_rate_hz INTEGER,axes_json TEXT,values_json TEXT,clock_start TEXT,clock_end TEXT,anti_alias_filter_json TEXT,probe_position TEXT,load_lps INTEGER,tach_pulse_json TEXT,packet_loss_pct REAL,clock_drift_ms REAL,desync_ms REAL,verdict TEXT,confidence_json TEXT,recorded_at TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS work_order(id TEXT PRIMARY KEY,pump_id TEXT,run_id TEXT,kind TEXT,station TEXT,disposition TEXT,status TEXT,speed_limit_rpm INTEGER,capacity_lps INTEGER,reason_json TEXT,signed_by TEXT,supersedes TEXT,observed_at TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS teardown_finding(id TEXT PRIMARY KEY,work_order_id TEXT,pump_id TEXT,finding TEXT,confirmed_fault TEXT,observed_at TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS standby_roster(pump_id TEXT PRIMARY KEY,station TEXT,mode TEXT,capacity_lps INTEGER,updated_by_order TEXT,source_id INTEGER);
 '''
 @contextmanager
 def connect(path):
@@ -46,4 +52,4 @@ def repeated(db,table,key,sid):
     return False
 def dump(db):
     return {t:[dict(x) for x in db.execute(f'SELECT * FROM {t} ORDER BY 1')]
-            for t in ('segment','gauge','pressure','leak','valve','permit','repair','notice','tap','restoration','pump','tank','pump_run','zone_demand','vibration_sample','tachometer')}
+            for t in ('segment','gauge','pressure','leak','valve','permit','repair','notice','tap','restoration','pump','tank','pump_run','zone_demand','vibration_sample','tachometer','health_assessment','recapture_task','recapture_record','work_order','teardown_finding','standby_roster')}
