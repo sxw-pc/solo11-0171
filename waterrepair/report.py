@@ -5,11 +5,12 @@ from .store import connect,dump
 def report(path):
     with connect(path) as db:return {'state':dump(db),'sources':[{'kind':x['kind'],'sha':x['sha']} for x in db.execute('SELECT kind,sha FROM source ORDER BY id')]}
 def audit(path):
-    from . import pressure,repair,resident,operations
+    from . import pressure,repair,resident,operations,vibration
     funcs={'segment':pressure.segment,'gauge':pressure.gauge,'pressure':pressure.import_reading,
            'valve':repair.valve,'permit':repair.permit,'repair':repair.isolate,'reopen':repair.reopen,
            'notice':resident.notice,'tap':resident.tap,'pump':operations.pump,
-           'tank':operations.tank,'pump_run':operations.run,'zone_demand':operations.demand}
+           'tank':operations.tank,'pump_run':operations.run,'zone_demand':operations.demand,
+           'vibration_sample':vibration.sample,'tachometer':vibration.tach}
     original=report(path)
     with connect(path) as db:raw=[(x['kind'],x['raw']) for x in db.execute('SELECT kind,raw FROM source ORDER BY id')]
     with TemporaryDirectory() as tmp:
