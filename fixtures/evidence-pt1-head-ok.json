@@ -1,0 +1,1 @@
+{"id":"TE1H","test_id":"PT1","meter_id":"MH1","meter_kind":"head","reading_value":300.0,"unit":"kPa","stable_window_start":"2026-01-10T08:05:00Z","stable_window_end":"2026-01-10T08:55:00Z","startup_excluded":true,"parallel_pumps":["P2"]}

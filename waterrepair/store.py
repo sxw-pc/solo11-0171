@@ -20,6 +20,12 @@ CREATE TABLE IF NOT EXISTS tank(id TEXT PRIMARY KEY,zone TEXT,capacity_l INTEGER
 CREATE TABLE IF NOT EXISTS pump_run(id TEXT PRIMARY KEY,pump_id TEXT,started_at TEXT,stopped_at TEXT,volume_l INTEGER,energy_wh INTEGER,source_id INTEGER);
 CREATE TABLE IF NOT EXISTS zone_demand(id TEXT PRIMARY KEY,zone TEXT,window_start TEXT,window_end TEXT,required_l INTEGER,source_id INTEGER);
 CREATE TABLE IF NOT EXISTS pump_test(id TEXT PRIMARY KEY,pump_id TEXT,run_id TEXT,phase TEXT,head_kpa INTEGER,volume_l INTEGER,energy_wh INTEGER,measured_at TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS acceptance_case(id TEXT PRIMARY KEY,pump_id TEXT,reference_head_kpa INTEGER,reference_volume_l INTEGER,guarantee_energy_wh INTEGER,safe_max_head_kpa INTEGER,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS meter(id TEXT PRIMARY KEY,pump_id TEXT,meter_kind TEXT,scope TEXT,calibrated_until TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS bus_allocation(id TEXT PRIMARY KEY,meter_id TEXT,pump_id TEXT,share REAL,window_start TEXT,window_end TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS test_evidence(id TEXT PRIMARY KEY,test_id TEXT,meter_id TEXT,meter_kind TEXT,reading_value REAL,unit TEXT,stable_window_start TEXT,stable_window_end TEXT,startup_excluded INTEGER,parallel_pumps_json TEXT,speed_hz REAL,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS calibration_correction(id TEXT PRIMARY KEY,meter_id TEXT,corrected_at TEXT,previous_calibrated_until TEXT,new_calibrated_until TEXT,invalidates_readings INTEGER,reason TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS pump_certificate(id TEXT PRIMARY KEY,pump_id TEXT,authority TEXT,version INTEGER,status TEXT,condition_json TEXT,cert_text TEXT,supersedes_id TEXT,issued_at TEXT,source_id INTEGER);
 '''
 @contextmanager
 def connect(path):
@@ -45,4 +51,4 @@ def repeated(db,table,key,sid):
     return False
 def dump(db):
     return {t:[dict(x) for x in db.execute(f'SELECT * FROM {t} ORDER BY 1')]
-            for t in ('segment','gauge','pressure','leak','valve','permit','repair','notice','tap','restoration','pump','tank','pump_run','zone_demand','pump_test')}
+            for t in ('segment','gauge','pressure','leak','valve','permit','repair','notice','tap','restoration','pump','tank','pump_run','zone_demand','pump_test','acceptance_case','meter','bus_allocation','test_evidence','calibration_correction','pump_certificate')}

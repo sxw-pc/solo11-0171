@@ -1,0 +1,1 @@
+{"id":"CC1","meter_id":"ME1","corrected_at":"2026-03-01T00:00:00Z","previous_calibrated_until":"2027-12-31T00:00:00Z","new_calibrated_until":"2025-12-31T00:00:00Z","invalidates_readings":true,"reason":"field_check_found_drift"}

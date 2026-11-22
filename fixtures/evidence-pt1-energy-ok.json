@@ -1,0 +1,1 @@
+{"id":"TE1E","test_id":"PT1","meter_id":"ME1","meter_kind":"energy","reading_value":37500.0,"unit":"Wh","stable_window_start":"2026-01-10T08:05:00Z","stable_window_end":"2026-01-10T08:55:00Z","startup_excluded":true,"parallel_pumps":["P2"],"speed_hz":50}
