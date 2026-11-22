@@ -1,10 +1,12 @@
 import argparse,json,tempfile
 from pathlib import Path
-from . import pressure,repair,resident
+from . import pressure,repair,resident,metering,billing
 from .report import report,audit
 COMMANDS={'segment-import':pressure.segment,'gauge-import':pressure.gauge,'pressure-import':pressure.import_reading,
           'valve-import':repair.valve,'permit-import':repair.permit,'repair-import':repair.isolate,
-          'reopen-import':repair.reopen,'notice-import':resident.notice,'tap-import':resident.tap}
+          'reopen-import':repair.reopen,'notice-import':resident.notice,'tap-import':resident.tap,
+          'meter-import':metering.register,'meter-reading-import':metering.reading,
+          'tariff-import':billing.tariff,'invoice-import':billing.issue}
 def main():
     p=argparse.ArgumentParser();s=p.add_subparsers(dest='cmd',required=True)
     for name in COMMANDS:
