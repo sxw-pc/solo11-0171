@@ -16,9 +16,18 @@ CREATE TABLE IF NOT EXISTS notice(id TEXT PRIMARY KEY,repair_id TEXT,households_
 CREATE TABLE IF NOT EXISTS tap(id TEXT PRIMARY KEY,repair_id TEXT,household TEXT,pressure_kpa INTEGER,observed_at TEXT,witness TEXT,status TEXT,source_id INTEGER);
 CREATE TABLE IF NOT EXISTS restoration(id INTEGER PRIMARY KEY,repair_id TEXT,status TEXT,restored_at TEXT,compensation_json TEXT,reason TEXT);
 CREATE TABLE IF NOT EXISTS worksite(id TEXT PRIMARY KEY,repair_id TEXT,x INTEGER,y INTEGER,method TEXT,source_id INTEGER);
-CREATE TABLE IF NOT EXISTS parcel(id TEXT PRIMARY KEY,owner TEXT,polygon_json TEXT,survey_version TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS parcel(id TEXT,owner TEXT,polygon_json TEXT,survey_version TEXT,crs TEXT,precision_cm INTEGER,valid_from TEXT,source_id INTEGER,PRIMARY KEY(id,survey_version));
 CREATE TABLE IF NOT EXISTS corridor(id TEXT PRIMARY KEY,worksite_id TEXT,path_json TEXT,width_cm INTEGER,source_id INTEGER);
 CREATE TABLE IF NOT EXISTS land_consent(id TEXT PRIMARY KEY,parcel_id TEXT,worksite_id TEXT,valid_from TEXT,valid_to TEXT,method TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS gas_line(id TEXT PRIMARY KEY,path_json TEXT,belt_cm INTEGER,crs TEXT,precision_cm INTEGER,survey_version TEXT,valid_from TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS obstacle(id TEXT PRIMARY KEY,polygon_json TEXT,crs TEXT,precision_cm INTEGER,survey_version TEXT,valid_from TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS closure(id TEXT PRIMARY KEY,parcel_id TEXT,lane TEXT,method TEXT,quota INTEGER,window_from TEXT,window_to TEXT,authority TEXT,cost TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS easement(id TEXT PRIMARY KEY,parcel_id TEXT,worksite_id TEXT,method TEXT,valid_from TEXT,valid_to TEXT,daily_from TEXT,daily_to TEXT,compensation_json TEXT,status TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS method_spec(id TEXT PRIMARY KEY,machine_width_cm INTEGER,min_turn_radius_m REAL,swing_cm INTEGER,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS survey_revocation(id TEXT PRIMARY KEY,survey_version TEXT,revoked_at TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS easement_withdrawal(id TEXT PRIMARY KEY,easement_id TEXT,withdrawn_at TEXT,source_id INTEGER);
+CREATE TABLE IF NOT EXISTS route_permit(id INTEGER PRIMARY KEY,worksite_id TEXT,seq INTEGER,status TEXT,decided_at TEXT,detail_json TEXT);
+CREATE TABLE IF NOT EXISTS route_start(id TEXT PRIMARY KEY,worksite_id TEXT,corridor_id TEXT,method TEXT,started_at TEXT,source_id INTEGER);
 '''
 @contextmanager
 def connect(path):
@@ -44,4 +53,5 @@ def repeated(db,table,key,sid):
     return False
 def dump(db):
     return {t:[dict(x) for x in db.execute(f'SELECT * FROM {t} ORDER BY 1')]
-            for t in ('segment','gauge','pressure','leak','valve','permit','repair','notice','tap','restoration','worksite','parcel','corridor','land_consent')}
+            for t in ('segment','gauge','pressure','leak','valve','permit','repair','notice','tap','restoration','worksite','parcel','corridor','land_consent',
+                      'gas_line','obstacle','closure','easement','method_spec','survey_revocation','easement_withdrawal','route_permit','route_start')}
